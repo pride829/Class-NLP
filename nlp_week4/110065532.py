@@ -173,13 +173,8 @@ task3_input = 'we descuss a possible meamin by that'
 #task3_input = 'Never gonna geeve youd upp'
 print("Text:",task3_input,"\n")
 comb_result = process_sent(task3_input)
-print("Result:", comb_result)
+print("Result:", comb_result, "\n\n\n")
 #### TASK3 END ####
 
-task2_result, task2_candidate = prep_check('at an afternoon')
 
-print(model.score('at an afternoon'))
-print(model.score('  afternoon'))
-print(model.score('afternoon'))
-print(model.score('in the afternoon'))
 
