@@ -28,6 +28,8 @@ if __name__== "__main__" :
 
 			count = int(tokens[3])
 
+
+
 			if pre_sg == '':
 
 				pre_sg = sg
