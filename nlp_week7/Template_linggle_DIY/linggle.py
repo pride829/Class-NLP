@@ -25,11 +25,46 @@ def parse_line(line):
     return query, tuple(map(parse_ngramstr, ngramcounts))
 
 
-def expand_query(query):
+def expand_query(query, max_len):
     # TODO: write your query expansion, e.g.,
     #  "in/at afternoon" -> ["in afternoon", "at afternoon"]
     #  "listen ?to music" -> ["listen music", "listen to music"]
-    return [query]
+
+    queries = [query]
+
+    flag = True
+    while flag:
+        flag = False
+        for q in queries:
+            words = q.split()
+            for i in range(len(words)):
+                if flag == True:
+                    continue
+                w = words[i]
+                if '/' in w:
+                    flag = True
+                    word_a, word_b = w.split('/')
+                    queries.append( ' '.join( words[:i] + [word_a] + words[i+1:] ) )
+                    queries.append( ' '.join( words[:i] + [word_b] + words[i+1:] ) )
+                    queries.remove(q)
+                elif '?' in w:
+                    flag = True
+                    word = w.replace('?', '')
+                    queries.append( ' '.join( words[:i] + [word] + words[i+1:] ) )
+                    queries.append( ' '.join( words[:i] + words[i+1:] ) )
+                    queries.remove(q)
+                elif '*' == w:
+                    flag = True
+                    # Expand the query to the max length
+                    for j in range(max_len - (len(words)-1) + 1):
+                        queries.append( ' '.join( words[:i] +
+                                        ['_' for k in range(0, j)] + 
+                                        words[i+1:]
+                                        ))
+                    queries.remove(q)
+
+
+    return queries
 
 
 def extend_query(query):
@@ -55,24 +90,28 @@ def linggle(linggle_table):
     if q == 'exit()':
         return
 
+    #max_len = max([len(n.split()) for n in linggle_table])
+    max_len = 5 # Pre-calculation show that it is 5
+
     # extend and expand query
     # TODO: 這裡的for看起來是由前往後執行？原來是這樣嗎？
 
     queries = [
         simple_query
         for query in extend_query(q)
-        for simple_query in expand_query(query)
+        for simple_query in expand_query(query, 5)
     ]
 
+    print(queries)
     # gather results
-    #ngramcounts是一個set
+    # ngramcounts is a set
     ngramcounts =  {item 
-                    for query in queries if query in linggle_table 
-                    for item in linggle_table[query]}
+                     for query in queries if query in linggle_table 
+                     for item in linggle_table[query]}
 
     # output 10 most common ngrams
     ngramcounts = nlargest(10, ngramcounts, key=itemgetter(1))
-    print(ngramcounts)
+
     if len(ngramcounts) > 0:
         print(*(f"{count:>7,}: {ngram}" for ngram, count in ngramcounts), sep='\n')
     else:
@@ -89,5 +128,6 @@ if __name__ == '__main__':
     import readline
 
     linggle_table = load_data(fileinput.input())
+    
     while linggle(linggle_table):
         pass
