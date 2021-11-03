@@ -6,7 +6,7 @@ from operator import itemgetter
 
 def inverted_index_reduce(items):
     # I know I am not supposed to use groupby but sorting is not working for some reason
-    # Join the lie with same ngram together
+    # Join the lines with same ngram together
     for ngram, ngram_lines in groupby(items, key=itemgetter(0)):
         lines = [line[1:][0] for line in ngram_lines]
         yield ngram, lines

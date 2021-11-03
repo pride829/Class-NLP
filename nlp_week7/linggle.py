@@ -159,7 +159,7 @@ def linggle(linggle_table):
         for simple_query in expand_query(query, 5)
     ]
 
-    #print(queries)
+    print("Queries = ", queries)
     # gather results
     # ngramcounts is a set
     ngramcounts =  {item 
