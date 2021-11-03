@@ -47,14 +47,17 @@ def expand_query(query, max_len):
 
     queries = [query]
 
+
+
     flag = True
     while flag:
         flag = False
         for q in queries:
             words = q.split()
+
             for i in range(len(words)):
                 if flag == True:
-                    continue
+                    break
                 w = words[i]
                 if '{' in w:
                     flag = True
@@ -82,9 +85,9 @@ def expand_query(query, max_len):
                     flag = True
                     word_a, word_b = w.split('/')
                     queries.append( ' '.join( words[:i] + [word_a] + words[i+1:] ) )
-                    print('Append ' + ' '.join( words[:i] + [word_a] + words[i+1:] ))
+                    #print('Append ' + ' '.join( words[:i] + [word_a] + words[i+1:] ))
                     queries.append( ' '.join( words[:i] + [word_b] + words[i+1:] ) )
-                    print('Append ' + ' '.join( words[:i] + [word_b] + words[i+1:] ))
+                    #print('Append ' + ' '.join( words[:i] + [word_b] + words[i+1:] ))
                     queries.remove(q)
                 elif '?' in w:
                     flag = True
@@ -92,6 +95,9 @@ def expand_query(query, max_len):
                     queries.append( ' '.join( words[:i] + [word] + words[i+1:] ) )
                     queries.append( ' '.join( words[:i] + words[i+1:] ) )
                     queries.remove(q)
+            if not flag:
+                queries.remove(q)
+                queries.append(' '.join(words))
 
 
     #print(queries)
@@ -99,17 +105,20 @@ def expand_query(query, max_len):
     flag = True
     while flag:
         flag = False
+
         for q in queries:
             
-            if q == '*':
+            if q == '*' or q == '':
                 # ignore the case that queries contains only one *
                 queries.remove(q)
                 continue
 
+
+
             words = q.split()
             for i in range(len(words)):
                 if flag == True:
-                    continue
+                    break
                 w = words[i]
                 if '*' == w:
                     flag = True
@@ -120,6 +129,18 @@ def expand_query(query, max_len):
                                         words[i+1:]
                                         ))
                     queries.remove(q)
+
+    #print('q 133:', queries)
+
+    for i in range(len(queries)):
+
+        words = queries[i].split()
+        for j in range(len(words)):
+            if '_' in words[j] and '_' != words[j]:
+                words[j] = words[j].replace('_', ' ')
+        queries[i] = ' '.join(words)
+            
+
 
     return queries
 
@@ -182,7 +203,7 @@ if __name__ == '__main__':
     import fileinput
     # If the readline module was loaded, then input() will use it to provide elaborate line editing and history features.
     # https://docs.python.org/3/library/functions.html#input
-    #import readline
+    import readline
 
     linggle_table = load_data(fileinput.input())
     
