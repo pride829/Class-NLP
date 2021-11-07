@@ -5,12 +5,12 @@
 def expander(words):
     # expander expande the n-word pharse to a 2^n-1 set that contains all kind of combination except the one with all '-' 
     if len(words) == 1:
-        return [[words[0]], ['-']]
+        return [[words[0]], ['_']]
 
     output = []
     for w in expander(words[1:]):
         output += [[words[0]] + w]
-        output += [['-'] + w]
+        output += [['_'] + w]
 
     return output
 
